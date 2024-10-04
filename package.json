@@ -1,0 +1,12 @@
+{
+  "name": "sstuscheduleparser",
+  "version": "1.0.0",
+  "description": "SSTU schedule parser",
+  "main": "parser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node parser.js"
+  },
+  "author": "VladKojima",
+  "license": "ISC"
+}
