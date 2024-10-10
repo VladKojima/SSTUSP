@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const START_URL = "https://rasp.sstu.ru";
 
 const groupLinkRE = /<a href="\/rasp\/group\/(?<id>\d*)">(?<name>[\w\W]*?)<\/a>/g;
@@ -43,3 +45,13 @@ function getGroupSchedule(groupId) {
                     }))
             }))
 )}
+
+async function parseAll(){
+    const res = [];
+
+    for (const group of await getAllGroups()){
+        res.push({...group, schedule: await getGroupSchedule(group.id)});
+    }
+
+    return res;
+}
