@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const START_URL = "https://rasp.sstu.ru";
 
 const groupLinkRE = /<a href="\/rasp\/group\/(?<id>\d*)">(?<name>[\w\W]*?)<\/a>/g;
@@ -17,21 +15,19 @@ function getGroupLink(id) {
     return `/rasp/group/${id}`;
 }
 
-fetch(START_URL).then(res=>res.text())
+function getAllGroups() {
+    return fetch(START_URL).then(res=>res.text())
     .then(rhtml => {
         const groups = [...rhtml.matchAll(groupLinkRE)].map(m => m.groups);
 
-        const json = JSON.stringify(groups);
-
-        fs.writeFile("./groups.txt", json, (err)=>{
-            if(err) throw err;
-        })
+        return groups;
     })
+}
 
-fetch(START_URL + getGroupLink(23), {headers: {'Accept': 'text/html'}})
+function getGroupSchedule(groupId) {
+    return fetch(START_URL + getGroupLink(groupId), {headers: {'Accept': 'text/html'}})
     .then(res=>res.text())
-    .then(rhtml => {
-        const weeks = (rhtml.match(weekRE) ?? [])
+    .then(rhtml => (rhtml.match(weekRE) ?? [])
             .map(str => ({
                 days: (str.match(dayRE) ?? [])
                     .map(day => ({
@@ -46,10 +42,4 @@ fetch(START_URL + getGroupLink(23), {headers: {'Accept': 'text/html'}})
                             }))
                     }))
             }))
-
-            const json = JSON.stringify(weeks);
-        
-            fs.writeFile("./23.txt", json, (err)=>{
-                if(err) throw err;
-            })
-    })
+)}
