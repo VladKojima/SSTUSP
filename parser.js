@@ -130,46 +130,58 @@ app.post('/fetch', async (req, res) => {
             }));
 
         // Отображаем данные на веб-странице
+        // Отображаем данные на веб-странице
         res.send(`
-            <!DOCTYPE html>
-            <html lang="ru">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Расписание для группы "${name}"</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        background-color: #f4f4f4;
-                        color: #333;
-                        margin: 0;
-                        padding: 20px;
-                    }
-                    h1 {
-                        color: #4CAF50;
-                    }
-                    ul {
-                        list-style-type: none;
-                        padding: 0;
-                    }
-                    li {
-                        background: #fff;
-                        margin: 5px 0;
-                        padding: 10px;
-                        border-radius: 5px;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                    }
-                    h2 {
-                        color: #333;
-                    }
-                    h3 {
-                        margin: 0;
-                    }
-                </style>
-            </head>
-            <body>
-                <h1>Расписание для группы "${name}"</h1>
-                ${weeks.map(week => `
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Расписание для группы "${name}"</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                color: #333;
+                margin: 0;
+                padding: 20px;
+            }
+            h1 {
+                color: #4CAF50;
+            }
+            .week-container {
+                display: flex; /* Используем Flexbox для горизонтального расположения */
+                justify-content: center;
+                flex-wrap: wrap; /* Позволяет переносить элементы на новую строку, если не помещаются */
+                gap: 20px; /* Промежуток между неделями */
+            }
+            .week {
+                background: #fff;
+                width: 100%;
+                padding: 10px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                flex: 1; /* Элементы будут равномерно распределены по доступному пространству */
+                min-width: 200px; /* Минимальная ширина блока с неделей */
+            }
+            ul {
+                list-style-type: none;
+                padding: 0;
+                border: 1px solid black;
+            }
+            h2 {
+                color: #333;
+            }
+            h3 {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Расписание для группы "${name}"</h1>
+        <div class="week-container">
+            ${weeks.map(week => `
+                <div class="week">
                     <h2>Неделя ${week.days[0].date}</h2>
                     <ul>
                         ${week.days.map(day => `
@@ -181,7 +193,7 @@ app.post('/fetch', async (req, res) => {
                                             <p>Предмет: ${lesson.name}</p>
                                             <p>Аудитория: ${lesson.room}</p>
                                             <p>Тип: ${lesson.type}</p>
-                                            <p>Преподаватель: ${lesson.teacher}</p>
+                                            ${lesson.teacher ? `<p>Преподаватель: ${lesson.teacher}</p>` : ''}
                                             <p>Время: ${lesson.hour}</p>
                                         </li>
                                     `).join('')}
@@ -189,10 +201,12 @@ app.post('/fetch', async (req, res) => {
                             </li>
                         `).join('')}
                     </ul>
-                `).join('')}
-            </body>
-            </html>
-        `);
+                </div>
+            `).join('')}
+        </div>
+    </body>
+    </html>
+`);
     } catch (error) {
         console.error('Произошла ошибка:', error);
         res.send('Произошла ошибка');
