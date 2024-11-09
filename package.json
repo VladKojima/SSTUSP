@@ -8,5 +8,8 @@
     "start": "node parser.js"
   },
   "author": "VladKojima",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.9.0"
+  }
 }

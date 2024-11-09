@@ -1,4 +1,6 @@
-const fs = require('fs');
+const http = require('http');
+
+const port = 3000;
 
 const START_URL = "https://rasp.sstu.ru";
 
@@ -55,3 +57,52 @@ async function parseAll(){
 
     return res;
 }
+
+http.createServer(async (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.statusCode = 200;
+
+    if (req.method !== "GET") {
+        res.write("Unsupported method\n");
+        res.statusCode = 405;
+    }
+
+    const reqParam = req.url.slice((req.url.match(/(?<=\w+)\//)?.index ?? -1) + 1);
+
+    switch (req.url.slice(1).replace(/\/[\d\w]*/, "")) {
+        case "groups":
+            const groups = await getAllGroups();
+            res.write(JSON.stringify(groups));
+            break;
+            
+        case "schedule":
+            if (!/^\d*$/.test(reqParam)) {
+                res.write("Group number isn't INT");
+                res.statusCode = 400;
+                break;
+            }
+
+            const id = parseInt(reqParam);
+
+            if (!(await getAllGroups()).find(group => group.id == id)) {
+                res.write("Unknown group id");
+                res.statusCode = 400;
+                break;
+            }
+
+            const schedule = await getGroupSchedule(id);
+
+            res.write(JSON.stringify(schedule));
+
+            break;
+        
+        default:
+            res.write("Unknown path");
+            res.statusCode = 400;
+            break;
+    }
+    
+    if(!res.closed)
+        res.end();
+})
+    .listen(port)
